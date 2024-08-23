@@ -3,7 +3,6 @@ import websockets
 import subprocess
 
 async def handle_stream_request(websocket, path):
-    print(f"New connection established from {websocket.remote_address}")  # Print when a new connection is established
     async for message in websocket:
         print(f"Received message: {message}")
         if message.startswith("stream:"):
@@ -17,12 +16,12 @@ async def handle_stream_request(websocket, path):
             ]
             # Run the VLC command
             subprocess.Popen(command)
+            print(f"Started streaming {video_path}")
 
 async def main():
-    async with websockets.serve(handle_stream_request, '0.0.0.0', 8765):
-        print("WebSocket server started on port 8765")  # Print when the server starts
-        await asyncio.Future()  # Run forever
+    server = await websockets.serve(handle_stream_request, '0.0.0.0', 8765)
+    print("WebSocket server started on port 8765")
+    await server.wait_closed()
 
 if __name__ == "__main__":
     asyncio.run(main())
-
