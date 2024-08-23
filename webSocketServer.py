@@ -1,25 +1,18 @@
-import asyncio
-import websockets
+from flask import Flask, request, jsonify
 
-async def test_connection():
-    backend_server_ip = "10.130.155.35"  # Your backend server IP
-    raspberry_pi_ip = "10.130.152.151"   # Raspberry Pi IP
-    uri = f"ws://{backend_server_ip}:5189/videoStreamHub?raspberryPiIp={raspberry_pi_ip}"
+app = Flask(__name__)
 
-    try:
-        async with websockets.connect(uri) as websocket:
-            print("Connected to the backend server")
+@app.route('/start-stream', methods=['POST'])
+def start_stream():
+    data = request.get_json()
+    video_path = data.get('videoPath')
 
-            # Send a "Ping" message to the backend
-            await websocket.send("Ping from Raspberry Pi")
-            print("Sent: Ping from Raspberry Pi")
+    # Handle the video streaming logic here
+    # For example, start streaming the video to a player or save it for later playback
+    print(f"Received request to stream video: {video_path}")
 
-            # Wait for the backend to respond with a "Pong"
-            response = await websocket.recv()
-            print(f"Received: {response}")
+    return jsonify({"status": "success", "message": "Streaming started"}), 200
 
-    except Exception as e:
-        print(f"Connection failed: {e}")
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 
-# Run the connection test
-asyncio.run(test_connection())
