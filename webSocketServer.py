@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, abort
 import os
 
 app = Flask(__name__)
@@ -8,7 +8,9 @@ def start_stream():
     data = request.get_json()
     video_path = data.get('videoPath')
 
-    # Ensure the file exists
+    if not video_path:
+        return {"status": "error", "message": "Video path not provided"}, 400
+
     if not os.path.isfile(video_path):
         return {"status": "error", "message": "File not found"}, 404
 
