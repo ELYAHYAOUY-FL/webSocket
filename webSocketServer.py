@@ -8,20 +8,24 @@ async def handle_stream_request():
     raspberry_pi_ip = socket.gethostbyname(socket.gethostname())
     uri = f"ws://{backend_server_ip}:5189/videoStreamHub?raspberryPiIp={raspberry_pi_ip}"
 
-    async with websockets.connect(uri) as websocket:
-        while True:
-            message = await websocket.recv()
-            print(f"Received message: {message}")
-            if message.startswith("ReceiveStream:"):
-                video_path = message.split(":", 1)[1]
-                command = [
-                    'cvlc',
-                    video_path,
-                    '--sout', '#rtp{sdp=rtsp://:8554/stream}',
-                    '--no-sout-all', '--sout-keep'
-                ]
-                subprocess.Popen(command)
-                print(f"Started streaming {video_path}")
+    try:
+        async with websockets.connect(uri) as websocket:
+            print(f"Connected to {uri}")
+            while True:
+                message = await websocket.recv()
+                print(f"Received message: {message}")
+                if message.startswith("ReceiveStream"):
+                    video_path = message.split(":", 1)[1]
+                    command = [
+                        'cvlc',
+                        video_path,
+                        '--sout', '#rtp{sdp=rtsp://:8554/stream}',
+                        '--no-sout-all', '--sout-keep'
+                    ]
+                    subprocess.Popen(command)
+                    print(f"Started streaming {video_path}")
+    except websockets.exceptions.ConnectionClosed as e:
+        print(f"Connection closed: {e}")
 
 async def main():
     await handle_stream_request()
