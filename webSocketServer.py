@@ -4,9 +4,10 @@ import subprocess
 import socket
 
 async def handle_stream_request():
-    # Get the Raspberry Pi's IP address
+    # Replace 'backend_server_ip' with the IP address of your backend server
+    backend_server_ip = "192.168.1.100"  # Example IP, change to your actual server IP
     raspberry_pi_ip = socket.gethostbyname(socket.gethostname())
-    uri = f"ws://localhost:5189/videoStreamHub?raspberryPiIp={raspberry_pi_ip}"
+    uri = f"ws://{backend_server_ip}:5189/videoStreamHub?raspberryPiIp={raspberry_pi_ip}"
 
     async with websockets.connect(uri) as websocket:
         while True:
@@ -28,3 +29,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
