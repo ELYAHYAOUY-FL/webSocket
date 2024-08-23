@@ -9,13 +9,15 @@ def start_stream():
     video_path = data.get('videoPath')
 
     # Ensure the file exists
-    if not os.path.exists(video_path):
+    if not os.path.isfile(video_path):
         return {"status": "error", "message": "File not found"}, 404
 
-    # Stream the video
     def generate():
         with open(video_path, 'rb') as f:
-            while chunk := f.read(1024*64):  # Read in chunks
+            while True:
+                chunk = f.read(1024*64)  # Adjust chunk size as needed
+                if not chunk:
+                    break
                 yield chunk
 
     return Response(generate(), mimetype='video/mp4')
