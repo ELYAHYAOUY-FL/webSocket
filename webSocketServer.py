@@ -1,28 +1,26 @@
-from flask import Flask, request, Response, abort
-import os
+from flask import Flask, request, jsonify
+import subprocess
 
 app = Flask(__name__)
 
-@app.route('/start-stream', methods=['POST'])
-def start_stream():
-    data = request.get_json()
-    video_path = data.get('videoPath')
+@app.route('/stream', methods=['POST'])
+def stream_video():
+    data = request.json
+    video_url = data.get('video_url')
 
-    if not video_path:
-        return {"status": "error", "message": "Video path not provided"}, 400
+    if not video_url:
+        return jsonify({'error': 'No video URL provided'}), 400
 
-    if not os.path.isfile(video_path):
-        return {"status": "error", "message": "File not found"}, 404
+    # VLC command to stream the video
+    vlc_command = f"cvlc --fullscreen --play-and-exit {video_url}"
 
-    def generate():
-        with open(video_path, 'rb') as f:
-            while True:
-                chunk = f.read(1024*64)  # Adjust chunk size as needed
-                if not chunk:
-                    break
-                yield chunk
-
-    return Response(generate(), mimetype='video/mp4')
+    try:
+        # Run VLC command to stream the video
+        subprocess.Popen(vlc_command, shell=True)
+        return jsonify({'message': 'Streaming started successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
