@@ -24,3 +24,5 @@ def stream_video():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
+
+curl http://10.130.152.82:5189/uploads/HR%20space%20-%20Google%20Chrome%202024-08-18%2021-59-12.mp4
