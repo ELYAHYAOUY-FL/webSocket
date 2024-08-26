@@ -30,16 +30,6 @@ def stream_video():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/stop', methods=['POST'])
-def stop_video():
-    global vlc_process
-
-    if vlc_process and vlc_process.poll() is None:
-        vlc_process.terminate()
-        vlc_process.wait()
-        return jsonify({'message': 'Streaming stopped successfully'}), 200
-    else:
-        return jsonify({'error': 'No streaming process to stop'}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
