@@ -3,3 +3,11 @@ interface "eth0" {  # Use "wlan0" for Wi-Fi
   static routers 192.168.1.1;
   static domain_name_servers 8.8.8.8, 8.8.4.4;
 }
+
+
+auto eth0
+iface eth0 inet static
+  address 192.168.1.100
+  netmask 255.255.255.0
+  gateway 192.168.1.1
+  dns-nameservers 8.8.8.8 8.8.4.4
