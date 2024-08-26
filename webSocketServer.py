@@ -30,6 +30,30 @@ def stream_video():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/control', methods=['POST'])
+def control_vlc():
+    global vlc_process
+    command = request.json.get('command')
+
+    if not command:
+        return jsonify({'error': 'No command provided'}), 400
+
+    if vlc_process:
+        if command == 'pause':
+            vlc_process.stdin.write(b' ')
+            vlc_process.stdin.flush()
+        elif command == 'resume':
+            vlc_process.stdin.write(b' ')
+            vlc_process.stdin.flush()
+        elif command == 'stop':
+            vlc_process.terminate()
+            vlc_process.wait()
+        else:
+            return jsonify({'error': 'Unknown command'}), 400
+
+        return jsonify({'message': f'Command {command} executed successfully'}), 200
+    else:
+        return jsonify({'error': 'No VLC process running'}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
