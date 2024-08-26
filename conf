@@ -5,6 +5,9 @@ interface "eth0" {  # Use "wlan0" for Wi-Fi
 }
 
 
+sudo nano /etc/network/interfaces
+
+
 auto eth0
 iface eth0 inet static
   address 192.168.1.100
